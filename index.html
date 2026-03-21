@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saisie des horaires</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">mes<em>horaires</em></div>
+  <a class="header-link" href="admin.html">Admin →</a>
+</header>
+
+<main>
+  <div class="greeting">Sélectionne ta fiche</div>
+  <div class="greeting-sub">Si tu ne te trouve pas, c'est que ton profil n'a pas été crée.</div>
+  <div class="employees-grid" id="emp-grid"></div>
+</main>
+
+<!-- Fenêtre de saisie des horaires -->
+<div class="overlay" id="saisie-overlay">
+  <div class="modal">
+    <button class="modal-x" onclick="fermerModal()">✕</button>
+    <div class="modal-name" id="s-nom"></div>
+    <div class="modal-role" id="s-poste"></div>
+    <div class="form-row">
+      <div class="form-group full">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="s-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Début</label>
+        <input class="form-input time-big" type="time" id="s-debut" oninput="mettreAJourPreview()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fin</label>
+        <input class="form-input time-big" type="time" id="s-fin" oninput="mettreAJourPreview()">
+      </div>
+    </div>
+    <div class="dur-preview" id="duree-preview"></div>
+    <div class="repas-banner" id="repas-banner">
+      <span>🍽</span><span>Repas attribué (+ de 5h de travail)</span>
+    </div>
+    <!-- Bouton pour afficher l'historique -->
+    <button class="btn btn-historique" style="margin-top:10px;" onclick="ouvrirHistorique()">Voir mes horaires</button>
+
+    <!-- Historique de l'employé -->
+    <div id="historique-overlay" class="overlay" style="display:none;">
+        <div class="modal">
+            <button class="modal-x" onclick="fermerHistorique()">✕</button>
+            <div class="modal-title">Historique de l'employé</div>
+            <table>
+            <thead>
+                <tr>
+                <th>Date</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Durée (h)</th>
+                <th>Repas</th>
+                </tr>
+            </thead>
+            <tbody id="historique-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="fermerModal()">Annuler</button>
+      <button class="btn btn-save" onclick="enregistrerHoraires()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
