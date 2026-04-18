@@ -113,12 +113,10 @@ function voirEmploye(empID) {
 
   var horaires = lireHoraires().filter(h => h.empID == empID);
   var totalMinutes = horaires.reduce((sum, h) => sum + h.dureeMin, 0);
-  var repasCount = horaires.filter(h => h.repas).length;
 
   var html = "";
   html += "<p><strong>Employé :</strong> " + employe.prenom + " " + employe.nom + "</p>";
   html += "<p><strong>Total heures :</strong> " + (totalMinutes / 60).toFixed(1) + " h</p>";
-  html += "<p><strong>Repas attribués :</strong> " + repasCount + "</p>";
   document.getElementById("details-content").innerHTML = html;
 
   var btnHistorique = document.querySelector(".btn-historique");
@@ -143,7 +141,7 @@ function ouvrirHistorique(empID) {
     for (var i = 0; i < horaires.length; i++) {
       var h = horaires[i];
       html += "<tr><td>" + h.date + "</td><td>" + h.debut + "</td><td>" + h.fin + "</td>";
-      html += "<td>" + (h.dureeMin/60).toFixed(1) + "</td><td>" + (h.repas ? "Oui" : "Non") + "</td></tr>";
+      html += "<td>" + (h.dureeMin/60).toFixed(1) + "</td></tr>";
     }
     tbody.innerHTML = html;
   }
@@ -188,7 +186,6 @@ function genererCSV() {
     .sort((a, b) => a.date.localeCompare(b.date));
 
   var totalMin = horaires.reduce((s, h) => s + h.dureeMin, 0);
-  var totalRepas = horaires.filter(h => h.repas).length;
 
   var sep = ";";
   var lignes = [];
@@ -197,7 +194,7 @@ function genererCSV() {
   lignes.push("Poste" + sep + (employe.poste || "-"));
   lignes.push("Mois" + sep + mois);
   lignes.push("");
-  lignes.push("Date" + sep + "Début" + sep + "Fin" + sep + "Durée (h)" + sep + "Repas");
+  lignes.push("Date" + sep + "Début" + sep + "Fin" + sep + "Durée (h)");
 
   for (var i = 0; i < horaires.length; i++) {
     var h = horaires[i];
@@ -205,14 +202,12 @@ function genererCSV() {
       h.date + sep +
       h.debut + sep +
       h.fin + sep +
-      (h.dureeMin / 60).toFixed(2).replace(".", ",") + sep +
-      (h.repas ? "Oui" : "Non")
+      (h.dureeMin / 60).toFixed(2).replace(".", ",")
     );
   }
 
   lignes.push("");
   lignes.push("TOTAL HEURES" + sep + (totalMin / 60).toFixed(2).replace(".", ","));
-  lignes.push("TOTAL REPAS" + sep + totalRepas);
 
   var contenu = "\uFEFF" + lignes.join("\r\n");
   var blob = new Blob([contenu], { type: "text/csv;charset=utf-8;" });

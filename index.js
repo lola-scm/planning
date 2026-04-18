@@ -51,7 +51,6 @@ function ouvrirModal(empID) {
   document.getElementById("s-debut").value = "";
   document.getElementById("s-fin").value = "";
   document.getElementById("duree-preview").textContent = "";
-  document.getElementById("repas-banner").classList.remove("show");
 
   document.getElementById("saisie-overlay").classList.add("open");
 }
@@ -60,7 +59,6 @@ function mettreAJourPreview() {
   var debut = document.getElementById("s-debut").value;
   var fin = document.getElementById("s-fin").value;
   var preview = document.getElementById("duree-preview");
-  var banner = document.getElementById("repas-banner");
 
   if (!debut || !fin) {
     preview.textContent = "";
@@ -70,13 +68,6 @@ function mettreAJourPreview() {
 
   var duree = calculerDuree(debut, fin);
   preview.textContent = "Durée : " + minutesEnHeure(duree);
-
-  // Afficher le bandeau repas uniquement pour la saisie en cours
-  if (duree >= 300) {
-    banner.classList.add("show");
-  } else {
-    banner.classList.remove("show");
-  }
 }
 
 
@@ -122,7 +113,6 @@ function enregistrerHoraires() {
   }
 
   var duree = calculerDuree(debut, fin);
-  var repas = duree >= 300; // 5h
 
   var employes = lireEmployes();
   var employe = null;
@@ -142,8 +132,7 @@ function enregistrerHoraires() {
     date: date,
     debut: debut,
     fin: fin,
-    dureeMin: duree,
-    repas: repas
+    dureeMin: duree
   };
 
   var horaires = lireHoraires();
@@ -171,15 +160,35 @@ function ouvrirHistorique() {
       html += "<td>" + h.date + "</td>";
       html += "<td>" + h.debut + "</td>";
       html += "<td>" + h.fin + "</td>";
-      html += "<td>" + (h.dureeMin/60).toFixed(1) + "</td>";
-      html += "<td>" + (h.repas ? "Oui" : "Non") + "</td>";
+      html += "<td>" + (h.dureeMin / 60).toFixed(1) + "</td>";
+      html += "<td><button class='btn-sm' onclick=\"supprimerLigne('" + h.id + "')\">Supprimer</button></td>";
       html += "</tr>";
     }
     tbody.innerHTML = html;
   }
 
-  // Afficher l'overlay de l'historique
   document.getElementById("historique-overlay").style.display = "flex";
+}
+
+// Supprimer un horaire 
+var horaireASupprimer = null;
+
+function supprimerLigne(horaireID) {
+  horaireASupprimer = horaireID;
+  document.getElementById("confirm-overlay").style.display = "flex";
+}
+
+function fermerConfirm() {
+  horaireASupprimer = null;
+  document.getElementById("confirm-overlay").style.display = "none";
+}
+
+function confirmerSuppression() {
+  if (!horaireASupprimer) return;
+  var horaires = lireHoraires();
+  sauvegarderHoraires(horaires.filter(h => h.id != horaireASupprimer));
+  fermerConfirm();
+  ouvrirHistorique();
 }
 
 // Fermer l'historique

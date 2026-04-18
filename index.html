@@ -48,15 +48,13 @@
       </div>
     </div>
     <div class="dur-preview" id="duree-preview"></div>
-    <div class="repas-banner" id="repas-banner">
-      <span>🍽</span><span>Repas attribué (+ de 5h de travail)</span>
-    </div>
+
     <!-- Bouton pour afficher l'historique -->
     <button class="btn btn-historique" style="margin-top:10px;" onclick="ouvrirHistorique()">Voir mes horaires</button>
 
     <!-- Historique de l'employé -->
     <div id="historique-overlay" class="overlay" style="display:none;">
-        <div class="modal">
+        <div class="modal modal-historique">
             <button class="modal-x" onclick="fermerHistorique()">✕</button>
             <div class="modal-title">Historique de l'employé</div>
             <table>
@@ -66,7 +64,7 @@
                 <th>Début</th>
                 <th>Fin</th>
                 <th>Durée (h)</th>
-                <th>Repas</th>
+                <th>Action</th>
                 </tr>
             </thead>
             <tbody id="historique-tbody"></tbody>
@@ -88,5 +86,14 @@
 
 <script src="data.js"></script>
 <script src="index.js"></script>
+<div id="confirm-overlay" style="display:none;" class="overlay">
+  <div class="modal" style="max-width:320px; text-align:center;">
+    <div class="modal-title" style="margin-bottom:16px;">Supprimer cet horaire ?</div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="fermerConfirm()">Annuler</button>
+      <button class="btn btn-delete" onclick="confirmerSuppression()">Supprimer</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
