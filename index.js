@@ -200,6 +200,10 @@ function fermerHistorique() {
 // AU CHARGEMENT
 // ===============================
 
-document.addEventListener("DOMContentLoaded", function () {
-  afficherGrille();
+document.addEventListener("DOMContentLoaded", async function () {
+  await afficherGrille();
+});
+
+window.addEventListener("load", async function () {
+  await afficherGrille();
 });
