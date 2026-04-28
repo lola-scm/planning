@@ -195,3 +195,7 @@ function confirmerSuppression() {
 function fermerHistorique() {
   document.getElementById("historique-overlay").style.display = "none";
 }
+
+window.addEventListener("load", async function () {
+  await afficherGrille();
+});
