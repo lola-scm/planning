@@ -12,7 +12,8 @@ const db = firebase.firestore();
 
 async function lireEmployes() {
   const snap = await db.collection("employes").get();
-  return snap.docs.map(d => d.data()).flat();
+  const data = snap.docs.map(d => d.data());
+  return data.flat().filter(e => e && e.id);
 }
 
 async function sauvegarderEmployes(employes) {
@@ -25,8 +26,10 @@ async function sauvegarderEmployes(employes) {
 
 async function lireHoraires() {
   const snap = await db.collection("horaires").get();
-  return snap.docs.map(d => d.data()).flat();
+  return snap.docs.map(d => d.data()).flat().filter(h => h && h.id);
 }
+
+
 
 async function sauvegarderHoraires(horaires) {
   const snap = await db.collection("horaires").get();
@@ -38,7 +41,7 @@ async function sauvegarderHoraires(horaires) {
 
 async function lireRecettes() {
   const snap = await db.collection("recettes").get();
-  return snap.docs.map(d => d.data()).flat();
+  return snap.docs.map(d => d.data()).flat().filter(r => r && r.id);
 }
 
 async function sauvegarderRecettes(recettes) {
