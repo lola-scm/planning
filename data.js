@@ -1,7 +1,3 @@
-// ===================================================
-// CONFIGURATION FIREBASE
-// ===================================================
-
 const firebaseConfig = {
   apiKey: "AIzaSyCXx3VymDRRFsQVfIu4dqkLc4oIOWR_LaU",
   authDomain: "planning-df4ca.firebaseapp.com",
@@ -13,10 +9,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
-// ===================================================
-// EMPLOYÉS
-// ===================================================
 
 async function lireEmployes() {
   const snap = await db.collection("employes").get();
@@ -31,10 +23,6 @@ async function sauvegarderEmployes(employes) {
   await batch.commit();
 }
 
-// ===================================================
-// HORAIRES
-// ===================================================
-
 async function lireHoraires() {
   const snap = await db.collection("horaires").get();
   return snap.docs.map(d => d.data());
@@ -48,10 +36,6 @@ async function sauvegarderHoraires(horaires) {
   await batch.commit();
 }
 
-// ===================================================
-// RECETTES
-// ===================================================
-
 async function lireRecettes() {
   const snap = await db.collection("recettes").get();
   return snap.docs.map(d => d.data());
@@ -64,10 +48,6 @@ async function sauvegarderRecettes(recettes) {
   recettes.forEach(r => batch.set(db.collection("recettes").doc(r.id), r));
   await batch.commit();
 }
-
-// ===================================================
-// UTILITAIRES
-// ===================================================
 
 function genererID() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
