@@ -1,9 +1,4 @@
-// Employé sélectionné
 var employeActuelID = null;
-
-
-// AFFICHER LES EMPLOYÉS
-// ===============================
 
 async function afficherGrille() {
   var employes = await lireEmployes();
@@ -19,25 +14,18 @@ async function afficherGrille() {
   grille.innerHTML = html;
 }
 
-// OUVRIR LA FENÊTRE
-// ===============================
-
-function ouvrirModal(empID) {
+async function ouvrirModal(empID) {
   employeActuelID = empID;
-  var employes = lireEmployes();
+  var employes = await lireEmployes();
   var employe = employes.find(e => e.id == empID);
-
   if (!employe) return;
 
   document.getElementById("s-nom").textContent = employe.prenom + " " + employe.nom;
   document.getElementById("s-poste").textContent = employe.poste || "";
-
-  // Réinitialisation
   document.getElementById("s-date").value = dateAujourdhui();
   document.getElementById("s-debut").value = "";
   document.getElementById("s-fin").value = "";
   document.getElementById("duree-preview").textContent = "";
-
   document.getElementById("saisie-overlay").classList.add("open");
 }
 
@@ -45,70 +33,31 @@ function mettreAJourPreview() {
   var debut = document.getElementById("s-debut").value;
   var fin = document.getElementById("s-fin").value;
   var preview = document.getElementById("duree-preview");
-
-  if (!debut || !fin) {
-    preview.textContent = "";
-    banner.classList.remove("show"); // Toujours enlever si pas complet
-    return;
-  }
-
-  var duree = calculerDuree(debut, fin);
-  preview.textContent = "Durée : " + minutesEnHeure(duree);
+  if (!debut || !fin) { preview.textContent = ""; return; }
+  preview.textContent = "Durée : " + minutesEnHeure(calculerDuree(debut, fin));
 }
 
-
-
-// FERMER LA FENÊTRE
-// ===============================
-
 function fermerModal() {
-
   document.getElementById("saisie-overlay").classList.remove("open");
   employeActuelID = null;
 }
 
-
-// CALCULER LA DURÉE
-// ===============================
-
 function calculerDuree(debut, fin) {
-
   var debutMin = heureEnMinutes(debut);
   var finMin = heureEnMinutes(fin);
-
-  if (finMin <= debutMin) {
-    finMin = finMin + 1440; // +24h
-  }
-
+  if (finMin <= debutMin) finMin += 1440;
   return finMin - debutMin;
 }
 
-
-// ENREGISTRER LES HORAIRES
-// ===============================
-
-function enregistrerHoraires() {
-
+async function enregistrerHoraires() {
   var date = document.getElementById("s-date").value;
   var debut = document.getElementById("s-debut").value;
   var fin = document.getElementById("s-fin").value;
-
-  if (!date || !debut || !fin) {
-    alert("Veuillez remplir tous les champs.");
-    return;
-  }
+  if (!date || !debut || !fin) { alert("Veuillez remplir tous les champs."); return; }
 
   var duree = calculerDuree(debut, fin);
-
-  var employes = lireEmployes();
-  var employe = null;
-
-  for (var i = 0; i < employes.length; i++) {
-    if (employes[i].id == employeActuelID) {
-      employe = employes[i];
-      break;
-    }
-  }
+  var employes = await lireEmployes();
+  var employe = employes.find(e => e.id == employeActuelID);
 
   var nouvelleHoraire = {
     id: genererID(),
@@ -121,19 +70,15 @@ function enregistrerHoraires() {
     dureeMin: duree
   };
 
-  var horaires = lireHoraires();
+  var horaires = await lireHoraires();
   horaires.push(nouvelleHoraire);
-  sauvegarderHoraires(horaires);
-
+  await sauvegarderHoraires(horaires);
   fermerModal();
 }
 
-// Affiche le tableau d'historique dans le modal
-// Ouvrir l'historique pour l'employé sélectionné
-function ouvrirHistorique() {
+async function ouvrirHistorique() {
   if (!employeActuelID) return;
-
-  var horaires = lireHoraires().filter(h => h.empID == employeActuelID);
+  var horaires = (await lireHoraires()).filter(h => h.empID == employeActuelID);
   var tbody = document.getElementById("historique-tbody");
 
   if (horaires.length === 0) {
@@ -142,21 +87,15 @@ function ouvrirHistorique() {
     var html = "";
     for (var i = 0; i < horaires.length; i++) {
       var h = horaires[i];
-      html += "<tr>";
-      html += "<td>" + h.date + "</td>";
-      html += "<td>" + h.debut + "</td>";
-      html += "<td>" + h.fin + "</td>";
+      html += "<tr><td>" + h.date + "</td><td>" + h.debut + "</td><td>" + h.fin + "</td>";
       html += "<td>" + (h.dureeMin / 60).toFixed(1) + "</td>";
-      html += "<td><button class='btn-sm' onclick=\"supprimerLigne('" + h.id + "')\">Supprimer</button></td>";
-      html += "</tr>";
+      html += "<td><button class='btn-sm' onclick=\"supprimerLigne('" + h.id + "')\">Supprimer</button></td></tr>";
     }
     tbody.innerHTML = html;
   }
-
   document.getElementById("historique-overlay").style.display = "flex";
 }
 
-// Supprimer un horaire 
 var horaireASupprimer = null;
 
 function supprimerLigne(horaireID) {
@@ -169,15 +108,14 @@ function fermerConfirm() {
   document.getElementById("confirm-overlay").style.display = "none";
 }
 
-function confirmerSuppression() {
+async function confirmerSuppression() {
   if (!horaireASupprimer) return;
-  var horaires = lireHoraires();
-  sauvegarderHoraires(horaires.filter(h => h.id != horaireASupprimer));
+  var horaires = await lireHoraires();
+  await sauvegarderHoraires(horaires.filter(h => h.id != horaireASupprimer));
   fermerConfirm();
   ouvrirHistorique();
 }
 
-// Fermer l'historique
 function fermerHistorique() {
   document.getElementById("historique-overlay").style.display = "none";
 }
