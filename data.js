@@ -1,13 +1,41 @@
 // ===================================================
+// CONFIGURATION FIREBASE
+// ===================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCXx3VymDRRFsQVfIu4dqkLc4oIOWR_LaU",
+  authDomain: "planning-df4ca.firebaseapp.com",
+  projectId: "planning-df4ca",
+  storageBucket: "planning-df4ca.firebasestorage.app",
+  messagingSenderId: "338758778876",
+  appId: "1:338758778876:web:242d98c91edc28850cfc79"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// ===================================================
 // EMPLOYÉS
 // ===================================================
 
-function lireEmployes() {
-  return JSON.parse(localStorage.getItem("employes") || "[]");
+async function lireEmployes() {
+  const snap = await getDocs(collection(db, "employes"));
+  return snap.docs.map(d => d.data());
 }
 
-function sauvegarderEmployes(employes) {
-  localStorage.setItem("employes", JSON.stringify(employes));
+async function sauvegarderEmployes(employes) {
+  // On récupère les anciens pour supprimer ceux qui n'existent plus
+  const snap = await getDocs(collection(db, "employes"));
+  for (const d of snap.docs) {
+    await deleteDoc(doc(db, "employes", d.id));
+  }
+  for (const e of employes) {
+    await setDoc(doc(db, "employes", e.id), e);
+  }
 }
 
 
@@ -15,26 +43,39 @@ function sauvegarderEmployes(employes) {
 // HORAIRES
 // ===================================================
 
-function lireHoraires() {
-  return JSON.parse(localStorage.getItem("horaires") || "[]");
+async function lireHoraires() {
+  const snap = await getDocs(collection(db, "horaires"));
+  return snap.docs.map(d => d.data());
 }
 
-function sauvegarderHoraires(horaires) {
-  localStorage.setItem("horaires", JSON.stringify(horaires));
+async function sauvegarderHoraires(horaires) {
+  const snap = await getDocs(collection(db, "horaires"));
+  for (const d of snap.docs) {
+    await deleteDoc(doc(db, "horaires", d.id));
+  }
+  for (const h of horaires) {
+    await setDoc(doc(db, "horaires", h.id), h);
+  }
 }
-
 
 
 // ===================================================
 // RECETTES
 // ===================================================
 
-function lireRecettes() {
-  return JSON.parse(localStorage.getItem("recettes") || "[]");
+async function lireRecettes() {
+  const snap = await getDocs(collection(db, "recettes"));
+  return snap.docs.map(d => d.data());
 }
 
-function sauvegarderRecettes(recettes) {
-  localStorage.setItem("recettes", JSON.stringify(recettes));
+async function sauvegarderRecettes(recettes) {
+  const snap = await getDocs(collection(db, "recettes"));
+  for (const d of snap.docs) {
+    await deleteDoc(doc(db, "recettes", d.id));
+  }
+  for (const r of recettes) {
+    await setDoc(doc(db, "recettes", r.id), r);
+  }
 }
 
 
