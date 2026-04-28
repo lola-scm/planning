@@ -5,33 +5,19 @@ var employeActuelID = null;
 // AFFICHER LES EMPLOYÉS
 // ===============================
 
-function afficherGrille() {
-
-  var employes = lireEmployes();
+async function afficherGrille() {
+  var employes = await lireEmployes();
   var grille = document.getElementById("emp-grid");
-
-  // Si aucun employé
-  if (employes.length === 0) {
-    grille.innerHTML = "Aucun employé.";
-    return;
-  }
-
+  if (employes.length === 0) { grille.innerHTML = "Aucun employé."; return; }
   var html = "";
-
   for (var i = 0; i < employes.length; i++) {
-
     var e = employes[i];
-
     html += "<div class='emp-card' onclick=\"ouvrirModal('" + e.id + "')\">";
-    html += e.prenom + " " + e.nom;
-    html += "<br>";
-    html += e.poste ? e.poste : "-";
+    html += e.prenom + " " + e.nom + "<br>" + (e.poste ? e.poste : "-");
     html += "</div>";
   }
-
   grille.innerHTML = html;
 }
-
 
 // OUVRIR LA FENÊTRE
 // ===============================
