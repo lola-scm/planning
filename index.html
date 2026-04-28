@@ -84,8 +84,11 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="module" src="data.js"></script>
-<script type="module" src="index.js"></script>
+<!-- Firebase SDK compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="data.js"></script>
+<script src="index.js"></script>
 <div id="confirm-overlay" style="display:none;" class="overlay">
   <div class="modal" style="max-width:320px; text-align:center;">
     <div class="modal-title" style="margin-bottom:16px;">Supprimer cet horaire ?</div>

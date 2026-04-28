@@ -2,9 +2,6 @@
 // CONFIGURATION FIREBASE
 // ===================================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCXx3VymDRRFsQVfIu4dqkLc4oIOWR_LaU",
   authDomain: "planning-df4ca.firebaseapp.com",
@@ -14,70 +11,59 @@ const firebaseConfig = {
   appId: "1:338758778876:web:242d98c91edc28850cfc79"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // ===================================================
 // EMPLOYÉS
 // ===================================================
 
 async function lireEmployes() {
-  const snap = await getDocs(collection(db, "employes"));
+  const snap = await db.collection("employes").get();
   return snap.docs.map(d => d.data());
 }
 
 async function sauvegarderEmployes(employes) {
-  // On récupère les anciens pour supprimer ceux qui n'existent plus
-  const snap = await getDocs(collection(db, "employes"));
-  for (const d of snap.docs) {
-    await deleteDoc(doc(db, "employes", d.id));
-  }
-  for (const e of employes) {
-    await setDoc(doc(db, "employes", e.id), e);
-  }
+  const snap = await db.collection("employes").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  employes.forEach(e => batch.set(db.collection("employes").doc(e.id), e));
+  await batch.commit();
 }
-
 
 // ===================================================
 // HORAIRES
 // ===================================================
 
 async function lireHoraires() {
-  const snap = await getDocs(collection(db, "horaires"));
+  const snap = await db.collection("horaires").get();
   return snap.docs.map(d => d.data());
 }
 
 async function sauvegarderHoraires(horaires) {
-  const snap = await getDocs(collection(db, "horaires"));
-  for (const d of snap.docs) {
-    await deleteDoc(doc(db, "horaires", d.id));
-  }
-  for (const h of horaires) {
-    await setDoc(doc(db, "horaires", h.id), h);
-  }
+  const snap = await db.collection("horaires").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  horaires.forEach(h => batch.set(db.collection("horaires").doc(h.id), h));
+  await batch.commit();
 }
-
 
 // ===================================================
 // RECETTES
 // ===================================================
 
 async function lireRecettes() {
-  const snap = await getDocs(collection(db, "recettes"));
+  const snap = await db.collection("recettes").get();
   return snap.docs.map(d => d.data());
 }
 
 async function sauvegarderRecettes(recettes) {
-  const snap = await getDocs(collection(db, "recettes"));
-  for (const d of snap.docs) {
-    await deleteDoc(doc(db, "recettes", d.id));
-  }
-  for (const r of recettes) {
-    await setDoc(doc(db, "recettes", r.id), r);
-  }
+  const snap = await db.collection("recettes").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  recettes.forEach(r => batch.set(db.collection("recettes").doc(r.id), r));
+  await batch.commit();
 }
-
 
 // ===================================================
 // UTILITAIRES
