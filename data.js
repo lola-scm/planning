@@ -1,10 +1,10 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyCXx3VymDRRFsQVfIu4dqkLc4oIOWR_LaU",
-  authDomain: "planning-df4ca.firebaseapp.com",
-  projectId: "planning-df4ca",
-  storageBucket: "planning-df4ca.firebasestorage.app",
-  messagingSenderId: "338758778876",
-  appId: "1:338758778876:web:242d98c91edc28850cfc79"
+  apiKey: "AIzaSyBV2uvCIYK_h_YVq6FlXSeLhfZYXgKexjM",
+  authDomain: "planning-test-4a807.firebaseapp.com",
+  projectId: "planning-test-4a807",
+  storageBucket: "planning-test-4a807.firebasestorage.app",
+  messagingSenderId: "170620092760",
+  appId: "1:170620092760:web:0c119105d38d92ade3e52d"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -12,8 +12,7 @@ const db = firebase.firestore();
 
 async function lireEmployes() {
   const snap = await db.collection("employes").get();
-  const data = snap.docs.map(d => d.data());
-  return data.flat().filter(e => e && e.id);
+  return snap.docs.map(d => d.data()).flat().filter(e => e && e.id);
 }
 
 async function sauvegarderEmployes(employes) {
@@ -28,8 +27,6 @@ async function lireHoraires() {
   const snap = await db.collection("horaires").get();
   return snap.docs.map(d => d.data()).flat().filter(h => h && h.id);
 }
-
-
 
 async function sauvegarderHoraires(horaires) {
   const snap = await db.collection("horaires").get();
@@ -50,6 +47,31 @@ async function sauvegarderRecettes(recettes) {
   snap.docs.forEach(d => batch.delete(d.ref));
   recettes.forEach(r => batch.set(db.collection("recettes").doc(r.id), r));
   await batch.commit();
+}
+
+async function lireCategories() {
+  const snap = await db.collection("categories").get();
+  return snap.docs.map(d => d.data()).flat().filter(c => c && c.id);
+}
+
+async function sauvegarderCategories(categories) {
+  const snap = await db.collection("categories").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  categories.forEach(c => batch.set(db.collection("categories").doc(c.id), c));
+  await batch.commit();
+}
+
+async function lireMdp() {
+  try {
+    const doc = await db.collection("config").doc("admin").get();
+    if (doc.exists) return doc.data().mdp || null;
+    return null;
+  } catch(e) { return null; }
+}
+
+async function sauvegarderMdp(mdp) {
+  await db.collection("config").doc("admin").set({ mdp: mdp });
 }
 
 function genererID() {
