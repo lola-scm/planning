@@ -9,7 +9,12 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true });
+db.settings({ 
+  experimentalForceLongPolling: true,
+  merge: true 
+});
+
+firebase.firestore.setLogLevel('silent');
 
 async function lireEmployes() {
   const snap = await db.collection("employes").get();
