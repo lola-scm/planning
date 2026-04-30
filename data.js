@@ -95,4 +95,65 @@ function dateAujourdhui() {
   var mois = String(d.getMonth() + 1).padStart(2, "0");
   var jour = String(d.getDate()).padStart(2, "0");
   return d.getFullYear() + "-" + mois + "-" + jour;
+}  await batch.commit();
+}
+
+async function lireRecettes() {
+  const snap = await db.collection("recettes").get();
+  return snap.docs.map(d => d.data()).flat().filter(r => r && r.id);
+}
+
+async function sauvegarderRecettes(recettes) {
+  const snap = await db.collection("recettes").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  recettes.forEach(r => batch.set(db.collection("recettes").doc(r.id), r));
+  await batch.commit();
+}
+
+async function lireCategories() {
+  const snap = await db.collection("categories").get();
+  return snap.docs.map(d => d.data()).flat().filter(c => c && c.id);
+}
+
+async function sauvegarderCategories(categories) {
+  const snap = await db.collection("categories").get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  categories.forEach(c => batch.set(db.collection("categories").doc(c.id), c));
+  await batch.commit();
+}
+
+async function lireMdp() {
+  try {
+    const doc = await db.collection("config").doc("admin").get();
+    if (doc.exists) return doc.data().mdp || null;
+    return null;
+  } catch(e) { return null; }
+}
+
+async function sauvegarderMdp(mdp) {
+  await db.collection("config").doc("admin").set({ mdp: mdp });
+}
+
+function genererID() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function heureEnMinutes(heure) {
+  var parts = heure.split(":");
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
+function minutesEnHeure(minutes) {
+  var h = Math.floor(minutes / 60);
+  var m = minutes % 60;
+  return h + "h" + (m < 10 ? "0" : "") + m;
+}
+
+function dateAujourdhui() {
+  var d = new Date();
+  var mois = String(d.getMonth() + 1).padStart(2, "0");
+  var jour = String(d.getDate()).padStart(2, "0");
+  return d.getFullYear() + "-" + mois + "-" + jour;
 }
